@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="utf-8">
+ <title>Construction Site for Axios ModBus UI plugin</title>
+</head> 
+ <body>
+ 
+ <canvas id='show' width='600' height='600'>
+ </canvas>
+ <canvas id='draw' width='600' height='600' style="display:none;">
+  </canvas>
+
+  <div id='buttarray'/>
+   
+<!--Modbus page goes here -->
+
+ <script>
+Revolves = [
+{name:'red',position:0,rps:.3,mult:1,multStep:.01,cost:1,radius:30,speed:.3},
+
+{name:'orange',position:0,rps:0,mult:1,multStep:.01,cost:100,radius:40,speed:.15},
+
+{name:'Gold',position:0,rps:.0,mult:1,multStep:.01,cost:10000,radius:50,speed:.07},
+{name:'yellow',position:0,rps:.0,mult:1,multStep:.01,cost:10000,radius:50,speed:.07},
+{name:'GreenYellow ',position:0,rps:.0,mult:1,multStep:.01,cost:10000,radius:50,speed:.07},
+{name:'lime',position:0,rps:.0,mult:1,multStep:.01,cost:1000000,radius:60,speed:.035},
+{name:'LimeGreen ',position:0,rps:.0,mult:1,multStep:.01,cost:1000000,radius:60,speed:.035},
+{name:'Aquamarine',position:0,rps:.0,mult:1,multStep:.01,cost:1000000,radius:60,speed:.035},
+{name:'MediumTurquoise ',position:0,rps:.0,mult:1,multStep:.01,cost:100000000,radius:70,speed:.0175},
+{name:'cyan',position:0,rps:.0,mult:1,multStep:.01,cost:100000000,radius:70,speed:.0175},
+{name:'DodgerBlue',position:0,rps:.0,mult:1,multStep:.01,cost:100000000,radius:70,speed:.0175},
+ 
+{name:'MediumSlateBlue ',position:0,rps:.0,mult:1,multStep:.01,cost:100000000,radius:70,speed:.0175},
+{name:'violet',position:0,rps:.0,mult:1,multStep:.01,cost:100000000,radius:70,speed:.0175},
+{name:'purple',position:0,rps:.0,mult:1,multStep:.01,cost:100000000,radius:70,speed:.0175},
+{name:'white',position:0,rps:.0,mult:1,multStep:.01,cost:1000000,radius:60,speed:.035}
+];
+
+
+formatNumber=function(num){
+//show only 3 sig digits
+//big numbers ger suffixises
+return num;
+}
+
+
+
+setup=function(){
+Speed=.06;
+Start=.3;
+Rad=30;
+baseCost=10;
+Max=3;
+Lev=1;
+for(i=0;i<Revolves.length;i++){
+Revolves[i].speed=Speed;
+Revolves[i].radius=Rad;
+Revolves[i].cost=baseCost;
+Revolves[i].Max=Max;
+Revolves[i].Start=Start;
+Revolves[i].Level=Lev;
+Lev=0;
+Speed=(Rad*Speed)/(Rad+30);
+Start=Speed*5;
+Max=Speed*50;
+Rad+=10;
+
+baseCost*=10;
+
+
+}
+}
+setup();
+
+buy=function(){
+butt=this;
+var i=parseInt(butt.id.split('_')[1]);
+if(i<Revolves.length){
+
+Cost=Revolves[i].cost;
+while (Cash>=Cost && Revolves[i].rps<Revolves[i].Max){
+Cash=Cash-Cost;
+Revolves[i].cost=Cost*1.1;
+Revolves[i].rps=Revolves[i].speed*Revolves[i].Level+Revolves[i].Start;
+Revolves[i].Level++;
+
+
+Cost=Revolves[i].cost;
+
+}
+updateButt();
+
+}
+}
+ascend=function(){
+butt=this;
+var i=parseInt(butt.id.split('_')[1]);
+if(i<Revolves.length){
+butt.onclick=buy;
+Revolves[i].cost*=5;
+Revolves[i].Level=0;
+Revolves[i].multStep*=(Revolves[i].rps/Revolves[i].Start);
+Revolves[i].rps=Revolves[i].speed*Revolves[i].Level+Revolves[i].Start;
+
+Revolves[i].Max+=4;
+
+}
+updateButt();
+}
+
+
+updateButt=function(){
+for(i=0;i<Revolves.length;i++){
+b=document.getElementById('butt_'+i);
+if( Revolves[i].rps>=Revolves[i].Max){
+b.onclick=ascend;//(this)';
+b.textContent='ascend';
+}
+else{
+b.textContent=Revolves[i].name+' $'+Math.round(100*Revolves[i].cost)/100;
+}
+
+
+}
+
+}
+
+genButt=function(){
+for(i=0;i<Revolves.length;i++){
+b=document.createElement("BUTTON");
+b.id='butt_'+i;
+b.onclick=buy;//(this)';
+b.style.backgroundColor=Revolves[i].name;
+buttarray.appendChild(b);
+//b.innerText=Revolves[i].name;
+
+}
+updateButt();
+
+}
+genButt();
+
+frame=0;
+
+Cash=0;
+LastLoopTime=Date.now();
+cshow=show.getContext('2d');
+cdraw=draw.getContext('2d');
+cdraw.fillRect(0,0,draw.width,draw.height);
+
+DrawArc=function(ind,color,start,end){
+radius=Revolves[ind].radius;
+cdraw.strokeStyle=color;
+cdraw.lineWidth=10;
+cdraw.beginPath();
+if(end-start>360){
+end=start+360;
+}
+start=start*Math.PI/180;
+end=end*Math.PI/180;
+cdraw.arc(300,300,radius,start,end);
+cdraw.stroke();
+
+}
+
+Spark=function(Color,number){
+while(number>0){
+number--;
+CenterR=Math.random()*25;
+CenterD=Math.random()*360;
+CX=300+Math.cos(CenterD*Math.PI/180)*CenterR;
+CY=300+Math.sin(CenterD*Math.PI/180)*CenterR;
+cdraw.beginPath();
+for(j=0;j<5;j++){
+Num=Math.random()*360;
+PX=300+Math.cos(Num*Math.PI/180)*25;
+PY=300+Math.sin(Num*Math.PI/180)*25;
+cdraw.moveTo(CX,CY);
+cdraw.lineTo(PX,PY);
+//gen pointer//draw white little line // draw big colored transparent lines
+}
+
+cdraw.strokeStyle=Color;
+cdraw.lineWidth=4;
+cdraw.globalAlpha=.5;
+cdraw.stroke();
+cdraw.globalAlpha=1;
+cdraw.strokeStyle='white';
+cdraw.lineWidth=1;
+cdraw.stroke();
+cdraw.globalAlpha=.3;
+cdraw.fillStyle=Color;
+cdraw.beginPath();
+cdraw.arc(300,300,25,0,2*Math.PI);
+cdraw.fill();
+cdraw.globalAlpha=1;
+
+}
+
+
+}
+
+
+DrawInfo=function(){
+cdraw.fillStyle='black';
+cdraw.fillRect(0,draw.height-100,draw.width,draw.height);
+cdraw.fillStyle='white';
+cdraw.font="20px Verdana";
+cdraw.fillText(mulstring,10,draw.height-75);
+cdraw.fillText('$'+Math.round(100*Cash)/100,10,draw.height-55);
+cdraw.fillText(RpsStr,10,draw.height-25);
+//
+
+//HERE
+cshow.drawImage(draw,0,0);
+cdraw.fillStyle='rgba(0,0,0,.05)';
+
+
+cdraw.fillRect(0,0,draw.width,draw.height);
+cdraw.beginPath();
+cdraw.arc(300,300,25,0,2*Math.PI);
+cdraw.fill();
+
+//cdraw.globalAlpha=.96;
+//draw.style.webkitFilter = "blur(9px)";
+
+//cdraw.drawImage(show,0,0);
+
+//cdraw.globalAlpha=1;
+
+}
+
+
+
+
+GameLoop=function(){
+frame++;
+NowTime=Date.now();
+TimeElapsed=NowTime-LastLoopTime;
+
+LastLoopTime=NowTime;
+if(TimeElapsed>0){
+TotRev=0;
+TotMult=1;
+mulstring="";
+RpsStr="";
+for(i=0;i<Revolves.length;i++){
+Circle=Revolves[i];
+oldPos=Circle.position;
+Circle.position += (Circle.rps*360*TimeElapsed)/1000;
+numFin=Math.floor(Circle.position/360);
+Spark(Circle.name,numFin);
+
+TotRev+=numFin;
+TotMult*=Circle.mult;
+Cash+=TotMult*numFin;
+
+Circle.mult+=Circle.multStep*numFin;
+newPos=Circle.position;
+if(newPos!=oldPos){
+DrawArc(i,Circle.name,oldPos-1,newPos+1);
+}
+Circle.position-=numFin*360;
+mulstring+=Math.round(100*Circle.mult)/100+" X ";
+RpsStr+=Circle.rps+"  ";
+//console.log(Circle);
+}
+mulstring=mulstring.substring(0,mulstring.length-3)+" = "+Math.round(100*TotMult)/100;
+//Cash+=TotMult*TotRev;
+DrawInfo();
+
+}
+requestAnimationFrame(GameLoop);
+}
+GameLoop();
+
+
+
+</script>
+ </body>
+
+ </html>
+ 
