@@ -39,25 +39,34 @@ buttarray.children[i].click();
 	ReactorRadius=30;
 	COLOR=[];
 Revolves = [
-{name:'red',position:0,rps:.3,mult:1,multStep:.01,cost:.01,radius:ReactorRadius,speed:.3,grandL:1}/*,
-
-{name:'orange',position:0,rps:0,mult:1,multStep:.01,cost:100,radius:40,speed:.15},
-
-{name:'Gold',position:0,rps:.0,mult:1,multStep:.01,cost:10000,radius:50,speed:.07},
-{name:'yellow',position:0,rps:.0,mult:1,multStep:.01,cost:10000,radius:50,speed:.07},
-{name:'GreenYellow ',position:0,rps:.0,mult:1,multStep:.01,cost:10000,radius:50,speed:.07},
-{name:'lime',position:0,rps:.0,mult:1,multStep:.01,cost:1000000,radius:60,speed:.035},
-{name:'LimeGreen ',position:0,rps:.0,mult:1,multStep:.01,cost:1000000,radius:60,speed:.035},
-{name:'Aquamarine',position:0,rps:.0,mult:1,multStep:.01,cost:1000000,radius:60,speed:.035},
-{name:'MediumTurquoise ',position:0,rps:.0,mult:1,multStep:.01,cost:100000000,radius:70,speed:.0175},
-{name:'cyan',position:0,rps:.0,mult:1,multStep:.01,cost:100000000,radius:70,speed:.0175},
-{name:'DodgerBlue',position:0,rps:.0,mult:1,multStep:.01,cost:100000000,radius:70,speed:.0175},
- 
-{name:'MediumSlateBlue ',position:0,rps:.0,mult:1,multStep:.01,cost:100000000,radius:70,speed:.0175},
-{name:'violet',position:0,rps:.0,mult:1,multStep:.01,cost:100000000,radius:70,speed:.0175},
-{name:'purple',position:0,rps:.0,mult:1,multStep:.01,cost:100000000,radius:70,speed:.0175},
-{name:'white',position:0,rps:.0,mult:1,multStep:.01,cost:1000000,radius:60,speed:.035}*/
+{name:'red',position:0,rps:.3,mult:1,multStep:.01,cost:.01,radius:ReactorRadius,speed:.3,grandL:1}
 ];
+
+setup=function(){
+Speed=.06;
+Start=.3;
+Rad=ReactorRadius;
+baseCost=.01;
+Max=3;
+Lev=1;
+for(i=0;i<Revolves.length;i++){
+Revolves[i].speed=Speed;
+Revolves[i].radius=Rad;
+Revolves[i].cost=baseCost;
+Revolves[i].Max=Max;
+Revolves[i].Start=Start;
+Revolves[i].Level=Lev;
+Lev=0;
+Speed=(Rad*Speed)/(Rad+ReactorRadius);
+Start=Speed*5;
+Max=Speed*50;
+Rad+=10;
+
+baseCost*=10;
+
+
+}
+}
 
 GetDist =function(x,X,y,Y){
 return Math.sqrt(Math.pow(x-X,2)+Math.pow(y-Y,2));
@@ -116,31 +125,7 @@ genButt();
 }
 }
 
-setup=function(){
-Speed=.06;
-Start=.3;
-Rad=ReactorRadius;
-baseCost=.01;
-Max=3;
-Lev=1;
-for(i=0;i<Revolves.length;i++){
-Revolves[i].speed=Speed;
-Revolves[i].radius=Rad;
-Revolves[i].cost=baseCost;
-Revolves[i].Max=Max;
-Revolves[i].Start=Start;
-Revolves[i].Level=Lev;
-Lev=0;
-Speed=(Rad*Speed)/(Rad+ReactorRadius);
-Start=Speed*5;
-Max=Speed*50;
-Rad+=10;
 
-baseCost*=10;
-
-
-}
-}
 
 Format=function(num){
 if((""+num).indexOf('e')>=0){
@@ -316,6 +301,8 @@ cdraw.globalAlpha=1;
 
 
 DrawInfo=function(){
+
+GlobalPower=1+HEAT/100000000;
 cdraw.fillStyle='black';
 cdraw.fillRect(0,0,300,draw.height);
 TotMult=1;
@@ -328,10 +315,10 @@ var Txt="";
 Txt+=formatNumber(Revolves[i].rps.toFixed(2))+"   ";
 TotMult*=Revolves[i].mult;
 
-Txt+="$"+formatNumber((TotMult/100).toFixed(2))+"/r   ";
-Txt+="$"+formatNumber(((TotMult*Revolves[i].rps)/100).toFixed(2))+"/s";
+Txt+="$"+formatNumber((Math.pow(TotMult,GlobalPower)/100).toFixed(2))+"/r   ";
+Txt+="$"+formatNumber(((Math.pow(TotMult,GlobalPower)*Revolves[i].rps)/100).toFixed(2))+"/s";
 cdraw.fillText(Txt,10,H);
-H=H+ReactorRadius;
+H=H+30;
 }
 }
 
@@ -339,6 +326,7 @@ H=H+ReactorRadius;
 cdraw.fillStyle='white';
 cdraw.font="20px Verdana";
 
+cdraw.fillText('Global power: '+formatNumber(GlobalPower.toFixed(2)),10,draw.height-75);
 cdraw.fillText('$'+formatNumber(Cash.toFixed(2)),10,draw.height-55);
 cdraw.fillText('Reactor heat: '+formatNumber(HEAT.toFixed(2)),10,draw.height-25);
 
@@ -391,7 +379,7 @@ Spark(Circle.name,numFin,Circle.grandL);
 
 TotRev+=numFin;
 TotMult*=Circle.mult;
-Cash+=Math.pow(TotMult*numFin,1+HEAT/100000000)/100;
+Cash+=Math.pow(TotMult,1+HEAT/100000000)*numFin/100;
 
 Circle.mult+=Circle.multStep*numFin;
 newPos=Circle.position;
