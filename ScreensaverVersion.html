@@ -4,7 +4,7 @@
  <meta charset="utf-8">
  <title>SpinningLightning</title>
 </head> 
- <body>
+ <body style='background-color:black;'>
  
  <canvas id='show' width='600' height='600'>
  </canvas>
@@ -36,8 +36,14 @@ draw.width=Width-20;
 
 	
 
-buttarray.children[buttarray.children.length-1-BuyLev].click();
-BuyLev = (BuyLev+1)%(buttarray.children.length-1)
+buttarray.children[buttarray.children.length-2-BuyLev].click();
+if(buttarray.children.length-2 == 0){
+BuyLev = 0;
+}
+else{
+BuyLev = (BuyLev+1)%(buttarray.children.length-2);
+}
+
 
 	
 	}
@@ -186,9 +192,9 @@ ascend=function(){
 butt=this;
 var i=parseInt(butt.id.split('_')[1]);
 if(i<Revolves.length){
-
+buttarray.children[buttarray.children.length-1].click();
 butt.onclick=buy;
-;
+
 Revolves[i].cost=0;
 Revolves[i].Level=0;
 Revolves[i].multStep*=(Revolves[i].rps/Revolves[i].Start);
