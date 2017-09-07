@@ -58,7 +58,7 @@ buttarray.children[i].click();
 	ReactorRadius=100;
 	COLOR=[];
 Revolves = [
-{name:'red',position:0,rps:.3,mult:1,multStep:.01,cost:.01,radius:ReactorRadius,speed:.3,grandL:1}
+{name:getRandomColor(),position:0,rps:.3,mult:1,multStep:.01,cost:.01,radius:ReactorRadius,speed:.3,grandL:1}
 ];
 
 setup=function(){
@@ -192,7 +192,7 @@ ascend=function(){
 butt=this;
 var i=parseInt(butt.id.split('_')[1]);
 if(i<Revolves.length){
-buttarray.children[buttarray.children.length-1].click();
+
 butt.onclick=buy;
 
 Revolves[i].cost=0;
@@ -205,6 +205,7 @@ Revolves[i].Max+=4;
 
 updateButt();
 }
+buttarray.children[buttarray.children.length-1].click();
 }
 
 
