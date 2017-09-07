@@ -273,7 +273,7 @@ cdraw.stroke();
 
 jaggedLineTo = function(CX,CY,X,Y,ctx){
 var Dist = Math.sqrt((CX-X)*(CX-X) + (CY-Y)*(CY-Y));
-cdraw.moveTo(CX,CY);
+ctx.moveTo(CX,CY);
 var M=99999;
 if(Math.abs(X-CX)>.0001){
 M = (Y-CY)/(X-CX);
@@ -292,7 +292,7 @@ UpDown = Math.random()*8-4;
 NX = ((1-t)*CX + t*X)+UpDown/(Math.sqrt(1+S*S));
 NY = ((1-t)*CY + t*Y)+UpDown*S/(Math.sqrt(1+S*S));
 
-cdraw.lineTo(NX,NY);
+ctx.lineTo(NX,NY);
 }
 
 
